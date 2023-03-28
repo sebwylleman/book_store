@@ -1,19 +1,30 @@
 require "book_repository"
 
-Rspec.describe BookRepository do
+RSpec.describe BookRepository do
+
+  def reset_books_table
+    seed_sql = File.read('spec/seeds_books.sql')
+    connection = PG.connect({ host: '127.0.0.1', dbname: 'book_store_test' })
+    connection.exec(seed_sql)
+  end
+
+  before(:each) do 
+    reset_books_table
+  end
+
   it "returns the lists of books" do
     repo = BookRepository.new
     books = repo.all
 
-    expect(books[0].length).to eq 2
-    expect(books[0].title).to eq 'Emma'
-    expect(books[0].author).to eq 'Jane Austen'
-    expect(books[0].id).to eq 1
+    expect(books.length).to eq 2
+    expect(books.first.title).to eq 'Emma'
+    expect(books.first.author).to eq 'Jane Austen'
+    expect(books.first.id).to eq '1'
 
-    expect(books[1].length).to eq 2
-    expect(books[1].title).to eq 'Dracula'
-    expect(books[1].author).to eq 'Bram Stoker'
-    expect(books[1].id).to eq 2
+    expect(books.length).to eq 2
+    expect(books.last.title).to eq 'Dracula'
+    expect(books.last.author).to eq 'Bram Stoker'
+    expect(books.last.id).to eq '2'
 
   end
 end
